@@ -1,0 +1,4 @@
+<?
+$pass = "ahsdkjhask112"
+
+?>
