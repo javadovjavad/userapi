@@ -1,9 +1,11 @@
 pipeline {
-    agent any
-	 docker {
+	
+	agent {
+	 	docker {
 		    image 'zricethezav/gitleaks'
 		    args '--entrypoint=""'
 		}
+	}
     stages {
         stage('Gitleaks') {
             env
