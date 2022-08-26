@@ -8,7 +8,6 @@ pipeline {
 	}
     stages {
         stage('Gitleaks') {
-            env
             steps {
                echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
             }
