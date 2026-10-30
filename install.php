@@ -1,26 +1,24 @@
 <?php
-$host = 'localhost';
-$user = 'root';
-$pass = '';
-$conn = new mysqli($host,$user,$pass);
+require __DIR__ . '/config.php';
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
 
 if ($conn->connect_error){
     die("Connection error: " . $conn->connect_error);
 }
 
-$sql = 'CREATE DATABASE IF NOT EXISTS `MyDb` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;';
-if ($conn->query($sql) === TRUE) {
-    echo "Database created";
-} else {
-    echo "Error: " . $conn->error;
+$sql = 'CREATE DATABASE IF NOT EXISTS `' . DB_NAME . '` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;';
+if ($conn->query($sql) !== TRUE) {
+    die("Error: " . $conn->error);
 }
+$conn->select_db(DB_NAME);
+echo "Database ready\n";
 
 $sql = '';
-$script = file('sql.sql');
+$script = file(__DIR__ . '/sql.sql');
 foreach ($script as $line){
     $startWith = substr(trim($line),0,2);
     $endWith = substr(trim($line), -1,1);
-    if (empty($line) || $startWith == '--' || $startWith == '/*' || $startWith == '//'){
+    if (trim($line) === '' || $startWith == '--' || $startWith == '/*' || $startWith == '//'){
         continue;
     }
     $sql = $sql . $line;
@@ -29,7 +27,7 @@ foreach ($script as $line){
         $sql = '';
     }
 }
-echo  '<div>SQL file imported successfully</div>';
+echo "SQL file imported successfully\n";
 
 
 $conn->close();

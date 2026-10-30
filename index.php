@@ -1,19 +1,21 @@
-<?
-$cli = mysqli_connect('localhost','root','','users');
+<?php
+require __DIR__ . '/config.php';
 
-
-
-if($_GET['name']){
-    $name = $_GET['name'];
-    $result = mysqli_query($cli,"select * from `table1` where `name` = '$name'");
-
-    while ($row = mysqli_fetch_assoc($result)){
-        $us['name'] = $row['name'];
-        $us['surname'] = $row['surname'];
-    }
-    echo 'Adi: ' . $us['name'] . '<br>Soyadi: ' . $us['surname'];
-
-
+$name = trim($_GET['name'] ?? '');
+if ($name === '') {
+    http_response_code(400);
+    exit('Usage: ?name=John');
 }
 
-?>
+$cli = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$stmt = mysqli_prepare($cli, 'SELECT name, surname FROM table1 WHERE name = ?');
+mysqli_stmt_bind_param($stmt, 's', $name);
+mysqli_stmt_execute($stmt);
+$row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
+if (!$row) {
+    http_response_code(404);
+    exit('User not found');
+}
+
+echo 'Adi: ' . htmlspecialchars($row['name']) . '<br>Soyadi: ' . htmlspecialchars($row['surname']);
